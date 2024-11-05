@@ -1,20 +1,26 @@
 const axios = require('axios');
 require('dotenv').config();
 
-const ACTIVE_CAMPAIGN_API_KEY = process.env.AC_API_KEY;
-const ACTIVE_CAMPAIGN_BASE_URL = process.env.AC_URL;
-
-async function getAccounts() {
-    try {
-        const response = await axios.get(`${ACTIVE_CAMPAIGN_BASE_URL}/accounts`, {
+class ActiveCampaignService {
+    constructor() {
+        this.apiKey = process.env.AC_API_KEY;
+        this.baseUrl = process.env.AC_URL;
+        this.axiosInstance = axios.create({
+            baseURL: this.baseUrl,
             headers: {
-                'Api-Token': ACTIVE_CAMPAIGN_API_KEY
+                'Api-Token': this.apiKey
             }
         });
-        return response.data;
-    } catch (error) {
-        throw new Error(`Error fetching accounts: ${error.message}`);
+    }
+
+    async getAccounts() {
+        try {
+            const response = await this.axiosInstance.get('/accounts');
+            return response.data;
+        } catch (error) {
+            throw new Error(`Error fetching accounts: ${error.message}`);
+        }
     }
 }
 
-module.exports = { getAccounts };
+module.exports = ActiveCampaignService;
